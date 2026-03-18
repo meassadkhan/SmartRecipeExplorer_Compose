@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.smartrecipeexplorer.ui.navigation.NavGraph
 import com.example.smartrecipeexplorer.ui.screens.HomeScreen
 import com.example.smartrecipeexplorer.ui.theme.SmartRecipeExplorerTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SmartRecipeExplorerTheme {
-                HomeScreen()
+                NavGraph()
             }
         }
     }

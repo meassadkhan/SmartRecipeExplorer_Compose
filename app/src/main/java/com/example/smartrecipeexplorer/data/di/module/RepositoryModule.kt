@@ -1,20 +1,19 @@
 package com.example.smartrecipeexplorer.data.di.module
 
-import com.example.smartrecipeexplorer.data.repository.FakeRecipeRepositoryImpl
+import com.example.smartrecipeexplorer.data.repository.RecipeRepositoryImpl
 import com.example.smartrecipeexplorer.domain.repository.RecipeRepository
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
-    @Provides
+abstract class RepositoryModule {
+    @Binds
     @Singleton
-    fun provideRecipeRepository(): RecipeRepository {
-        return FakeRecipeRepositoryImpl()
-    }
-
+    abstract fun bindRecipeRepository(
+        impl: RecipeRepositoryImpl
+    ): RecipeRepository
 }

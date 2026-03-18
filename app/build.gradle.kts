@@ -65,10 +65,25 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // ViewModel Compose
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Hilt + Navigation Compose
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
+
+    //retrofit
+    implementation(libs.retrofit)
+    implementation(libs.gson)
+
+    //coil
+    implementation(libs.coil.compose)
+
+    //navigation
+    implementation(libs.navigation.compose)
+
+    //room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 }
