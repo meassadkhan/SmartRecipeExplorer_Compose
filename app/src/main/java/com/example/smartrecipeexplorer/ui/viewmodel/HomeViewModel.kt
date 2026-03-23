@@ -10,8 +10,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,6 +28,16 @@ class HomeViewModel @Inject constructor(
     private val _state = MutableStateFlow<RecipeUiState>(RecipeUiState.Loading)
     val state: StateFlow<RecipeUiState> = _state
 
+
+    private var allRecipes: List<Recipe> = emptyList()
+
+    private val _visibleRecipes = MutableStateFlow<List<Recipe>>(emptyList())
+    val visibleRecipes: StateFlow<List<Recipe>> = _visibleRecipes
+
+    private var currentPage = 0
+    private val pageSize = 5
+    private var isLoadingMore = false
+
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
@@ -35,32 +49,54 @@ class HomeViewModel @Inject constructor(
     private fun observeRecipes() {
         viewModelScope.launch {
 
-            _searchQuery
-                .debounce(500)
-                .collectLatest { query ->
+            combine(
+                getRecipesUseCase(),
+                _searchQuery.debounce(500)
+            ) { recipes, query ->
 
-                    _state.value = RecipeUiState.Loading
-
-                    try {
-                        val recipes = getRecipesUseCase()
-
-                        val filtered = if (query.isBlank()) {
-                            recipes
-                        } else {
-                            recipes.filter {
-                                it.title.contains(query, ignoreCase = true)
-                            }
-                        }
-
-                        _state.value = RecipeUiState.Success(filtered)
-
-                    } catch (e: Exception) {
-                        _state.value = RecipeUiState.Error(
-                            e.message ?: "Error occurred"
-                        )
+                if (query.isBlank()) {
+                    recipes
+                } else {
+                    recipes.filter {
+                        it.title.contains(query, ignoreCase = true)
                     }
                 }
+            }
+                .onStart {
+                    _state.value = RecipeUiState.Loading
+                }
+                .catch {
+                    _state.value = RecipeUiState.Error("Error")
+                }
+                .collect { filtered ->
+
+                    allRecipes = filtered
+                    currentPage = 0
+                    _visibleRecipes.value = emptyList()
+
+                    loadNextPage()
+                    _state.value = RecipeUiState.Success(filtered)
+                }
         }
+    }
+
+    fun loadNextPage() {
+        if (isLoadingMore) return
+
+        val start = currentPage * pageSize
+        if (start >= allRecipes.size) return
+
+        isLoadingMore = true
+
+        val nextItems = allRecipes
+            .drop(start)
+            .take(pageSize)
+
+        _visibleRecipes.value = _visibleRecipes.value + nextItems
+
+        currentPage++
+        isLoadingMore = false
+
     }
 
     fun onSearchQueryChange(query: String) {
@@ -70,8 +106,7 @@ class HomeViewModel @Inject constructor(
     fun onFavoriteClick(id: String) {
         viewModelScope.launch {
             toggleFavoriteUseCase(id)
-            observeRecipes() // refresh list
         }
     }
 
-    }
+}

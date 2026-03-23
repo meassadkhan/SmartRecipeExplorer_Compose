@@ -7,6 +7,7 @@ import com.example.smartrecipeexplorer.ui.state.DetailUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +25,7 @@ class DetailViewModel @Inject constructor(
             _state.value = DetailUiState.Loading
 
             try {
-                val recipe = getRecipeDetailUseCase(id)
+                val recipe = getRecipeDetailUseCase(id).first()
                 _state.value = DetailUiState.Success(recipe)
 
             } catch (e: Exception) {
