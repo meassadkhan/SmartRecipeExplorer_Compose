@@ -88,4 +88,6 @@ dependencies {
     ksp(libs.room.compiler)
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.34.0")
+
+    implementation("androidx.compose.material:material")
 }

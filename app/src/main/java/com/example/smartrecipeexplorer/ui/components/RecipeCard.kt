@@ -7,6 +7,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,7 +37,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.smartrecipeexplorer.domain.model.Recipe
-
 @Composable
 fun RecipeCard(
     recipe: Recipe,
@@ -44,11 +44,7 @@ fun RecipeCard(
     onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    // ✅ Expand state
     var isExpanded by remember { mutableStateOf(false) }
-
-    // ✅ Animated favorite color
     val tint by animateColorAsState(
         targetValue = if (recipe.isFavourite) Color.Red else Color.Gray,
         label = "fav_color"
@@ -56,74 +52,59 @@ fun RecipeCard(
 
     Card(
         modifier = modifier
-            .padding(horizontal = 12.dp, vertical = 6.dp)
             .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 6.dp)
             .animateContentSize()
-            .clickable {
-                isExpanded = !isExpanded
-            },
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(6.dp),
+            .clickable { isExpanded = !isExpanded },
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
 
-        Column {
+        Column(modifier = Modifier.padding(16.dp)) {
 
-            // Image
             AsyncImage(
                 model = recipe.imageUrl,
                 contentDescription = recipe.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .clickable {
-                        onClick()
-                    }
-                ,
+                    .clickable { onClick() },
                 contentScale = ContentScale.Crop
-
             )
 
-            Column(
-                modifier = Modifier.padding(12.dp)
-            ) {
+            Spacer(modifier = Modifier.height(12.dp))
 
-                Row() {
-                    Text(
-                        text = recipe.title,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = recipe.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
 
-                    IconButton(onClick = { onFavoriteClick() }) {
-
-                        Icon(
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .padding(start = 4.dp),
-                            imageVector = if (recipe.isFavourite)
-                                Icons.Default.Favorite
-                            else
-                                Icons.Default.FavoriteBorder,
-                            tint = tint,
-                            contentDescription = "Favorite"
-                        )
-                    }
-                }
-
-
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                AnimatedVisibility(
-                    visible = isExpanded,
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically()
+                IconButton(
+                    onClick = { onFavoriteClick() }
                 ) {
-                    Text(
-                        text = recipe.description.take(1000) + "...",
-                        style = MaterialTheme.typography.bodyMedium,
+                    Icon(
+                        imageVector = if (recipe.isFavourite)
+                            Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        tint = tint,
+                        contentDescription = "Favorite"
                     )
                 }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                Text(
+                    text = recipe.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = if (isExpanded) Int.MAX_VALUE else 4
+                )
             }
         }
     }

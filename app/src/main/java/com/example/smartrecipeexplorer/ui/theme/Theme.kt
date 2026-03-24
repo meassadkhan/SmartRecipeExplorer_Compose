@@ -51,11 +51,11 @@ fun SmartRecipeExplorerTheme(
         else -> LightColorScheme
     }
 
+    val colors = if (darkTheme) DarkColors else LightColors
+
+
     MaterialTheme(
-        colorScheme =  lightColorScheme(
-            primary = Color(0xFF4CAF50),
-            secondary = Color(0xFF81C784)
-        ),
+        colorScheme =  colors,
         typography = Typography,
         content = content
     )

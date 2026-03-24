@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.smartrecipeexplorer.ui.screens.DetailScreen
+import com.example.smartrecipeexplorer.ui.screens.FavoritesScreen
 import com.example.smartrecipeexplorer.ui.screens.HomeScreen
 
 @Composable
@@ -27,6 +28,10 @@ fun NavGraph() {
                 recipeId,
                 navController = navController
             )
+        }
+
+        composable("favorites") {
+            FavoritesScreen(navController)
         }
     }
 }
