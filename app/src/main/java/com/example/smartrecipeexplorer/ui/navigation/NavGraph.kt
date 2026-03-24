@@ -23,7 +23,10 @@ fun NavGraph() {
 
         composable("detail/{recipeId}") { backStackEntry ->
             val recipeId = backStackEntry.arguments?.getString("recipeId") ?: ""
-            DetailScreen(recipeId)
+            DetailScreen(
+                recipeId,
+                navController = navController
+            )
         }
     }
 }

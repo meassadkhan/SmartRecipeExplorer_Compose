@@ -86,4 +86,6 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.34.0")
 }

@@ -18,10 +18,12 @@ import coil.compose.AsyncImage
 import com.example.smartrecipeexplorer.domain.model.Recipe
 
 @Composable
-fun DetailContent(recipe: Recipe) {
-
+fun DetailContent(
+    recipe: Recipe,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {

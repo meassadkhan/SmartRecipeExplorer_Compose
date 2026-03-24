@@ -31,8 +31,15 @@ import com.example.smartrecipeexplorer.ui.components.RecipeCard
 import com.example.smartrecipeexplorer.ui.state.RecipeUiState
 import com.example.smartrecipeexplorer.ui.viewmodel.HomeViewModel
 import androidx.compose.animation.*
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -42,18 +49,30 @@ fun HomeScreen(
     val visibleList by viewModel.visibleRecipes.collectAsState()
     val query by viewModel.searchQuery.collectAsState()
 
+
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets.systemBars,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("Smart Recipe Explorer")
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+    ) { padding ->
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(padding)
             .padding(8.dp)
     ) {
-        Text(
-            text = "Smart Recipe Explorer",
-            style = MaterialTheme.typography.headlineSmall
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         TextField(
             value = query,
             onValueChange = { viewModel.onSearchQueryChange(it) },
@@ -68,13 +87,13 @@ fun HomeScreen(
 
         when (recipeState) {
             is RecipeUiState.Loading -> LoadingView()
-            is RecipeUiState.Success ->{
+            is RecipeUiState.Success -> {
                 Log.i("visibleList", "HomeScreen: ${visibleList.size}")
                 RecipeList(
-                navController = navController,
-                recipes = visibleList,
-                viewModel = viewModel
-            )
+                    navController = navController,
+                    recipes = visibleList,
+                    viewModel = viewModel
+                )
 
             }
 
@@ -82,6 +101,7 @@ fun HomeScreen(
 
         }
     }
+}
 
 }
 
